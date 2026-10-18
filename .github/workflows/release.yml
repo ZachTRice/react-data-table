@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@zachtrice'
+
+      - name: Check the tag matches package.json
+        run: test "$GITHUB_REF_NAME" = "v$(node -p "require('./package.json').version")"
+
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test --if-present
+
+      - name: Publish to GitHub Packages
+        run: npm publish --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name=$(node -p "require('./package.json').name")
+          prev=$(git describe --tags --abbrev=0 "$GITHUB_REF_NAME^" 2>/dev/null || true)
+          range="$GITHUB_REF_NAME"
+          if [ -n "$prev" ]; then range="$prev..$GITHUB_REF_NAME"; fi
+          {
+            echo "\`npm install $name@${GITHUB_REF_NAME#v}\` ([npm](https://www.npmjs.com/package/$name/v/${GITHUB_REF_NAME#v}))"
+            echo
+            echo "## Changes"
+            echo
+            git log --no-merges --invert-grep --grep='^ci:' --format='- %s' "$range"
+          } > release-notes.md
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes-file release-notes.md
