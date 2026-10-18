@@ -1,0 +1,67 @@
+{
+  "name": "@zachtrice/react-data-table",
+  "version": "0.1.0",
+  "description": "Small, accessible React data table with stable blank-last sorting, client-side pagination (including All), and a cursor-paged loader that fetches every page.",
+  "keywords": [
+    "react",
+    "table",
+    "data-table",
+    "datagrid",
+    "sort",
+    "sortable",
+    "pagination",
+    "cursor",
+    "infinite-loading",
+    "dynamodb",
+    "accessible",
+    "a11y",
+    "typescript"
+  ],
+  "author": "ZachTRice <zachtrice@gmail.com> (https://zachtrice.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZachTRice/react-data-table.git"
+  },
+  "homepage": "https://github.com/ZachTRice/react-data-table#readme",
+  "bugs": {
+    "url": "https://github.com/ZachTRice/react-data-table/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test \"test/*.test.mjs\"",
+    "prepublishOnly": "npm test"
+  },
+  "peerDependencies": {
+    "react": ">=17"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "jsdom": "^30.1.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^5.9.3"
+  }
+}
